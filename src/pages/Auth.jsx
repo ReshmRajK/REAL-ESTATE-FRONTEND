@@ -1,60 +1,133 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { userRegisterAPI } from "../server/allApis"
+import { userLoginAPI, userRegisterAPI } from "../server/allApis"
+import { useDispatch } from "react-redux"
+import { signInFailure, signInStart, signInSuccess } from "../redux/user/userSlice"
+
+
 
 function Auth({ login }) {
+const dispatch=useDispatch()
 
-  const navigate=useNavigate()
 
-  const [formData,setFormData]=useState({
-    userName:'',email:'',password:''
+  const navigate = useNavigate()
+
+  const [formData, setFormData] = useState({
+    userName: '', email: '', password: ''
   })
 
-  const [loading,setLoading]=useState(false)
-  // const [error,setError]=useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error,setError]=useState(null)
+
+  const [validUname, setValidUname] = useState(false)
+  const [validEmail, setValidEmail] = useState(false)
+  const [validPsw, setValidPsw] = useState(false)
 
 
-  const setData=(e)=>{
-    const {name,value}=e.target
-    setFormData({...formData,[name]:value})
+  const setData = (e) => {
+    const { name, value } = e.target
+    if (name == 'userName') {
+
+      if (value.match(/^[a-zA-Z ]+$/)) {
+        setValidUname(false)
+        setFormData({ ...formData, [name]: value })
+
+      }
+      else {
+        setValidUname(true)
+      }
+
+    }
+
+    //email
+    if (name == 'email') {
+      if (value.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)) {
+        setValidEmail(false)
+        setFormData({ ...formData, [name]: value })
+
+      }
+      else {
+        setValidEmail(true)
+      }
+    }
+
+
+    //password
+    if (name == 'password') {
+
+      if (value.match(/^[a-zA-Z0-9]+$/)) {
+        setValidPsw(false)
+        setFormData({ ...formData, [name]: value })
+
+      }
+      else {
+        setValidPsw(true)
+      }
+
+    }
 
   }
   // console.log(formData);
-  const handleChange=async(e)=>{
-    e.preventDefault()
+  
+
+const handleChange=async(e)=>{
+  e.preventDefault()
+  
+  setLoading(true)
+  const {userName,email,password}=formData
+
+  if(!userName||!email||!password){
+    alert('Please fill All data')
+  }
+
+  else{
+    const result=await userRegisterAPI(formData)
     
-    const {userName,email,password}=formData
-    if(!userName||!email||!password){
-      alert('Please fill all data...!')
+    if(result.status==201){
+     alert( result.data) 
+      setLoading(false)
+      setFormData({userName:"",email:"",password:""})
+      navigate('/login')
     }
     else{
-      const result=await userRegisterAPI(formData)
-      if(result.status==201){
-        alert(result.data)
-        setLoading(true)
-        setFormData({...formData,userName:'',email:'',password:''})      
-        navigate('/login')
-      }
-      else{
-        //  if(result.success==false){
-        //  setError(result.message)
-        //   setLoading(false)
-        // setFormData({...formData,userName:'',email:'',password:''})
-          
-        // }
-         setLoading(false)
-         alert(result.response.data)
-         setFormData({...formData,userName:'',email:'',password:''})
-      }
-     
+      alert(result.response.data)
+      setLoading(false)
+      setError(null)
+      setFormData({userName:"",email:"",password:""})
     }
     
-   
-    
-
-
   }
+}
+
+const handleLogin=async(e)=>{
+  e.preventDefault()
+  // setLoading(true)
+  dispatch(signInStart())
+  const {email,password}=formData
+
+  if(!email || !password){
   
+     alert('Please fill all data')
+  }
+  else{
+      const result=await userLoginAPI(formData)
+      if(result.status==200){ 
+          localStorage.setItem('token',result.token)
+          // alert(result.data.message)
+          dispatch(signInSuccess(result.data))
+          setLoading(false)
+          setFormData({ ...formData, email:'',password:''})
+          navigate('/')
+      }
+      else{
+          // alert(result.response.data)
+          dispatch(signInFailure(result.response.data))  
+          setLoading(false)           
+          setFormData({ ...FormData, email:'',password:''})
+
+      }
+  }
+}
 
   return (
     <div className="max-w-lg mx-auto">
@@ -68,19 +141,44 @@ function Auth({ login }) {
       <div>
         {login ?
           <form className="flex flex-col gap-4">
-            <input className="border p-3 rounded-lg " type="email" placeholder="email" id="email" name="email"/>
-            <input className="border p-3 rounded-lg " type="password" placeholder="Password" id="password" name='password' />
-            <button className="bg-slate-700 rounded-lg p-3 text-white hover:opacity-95 disabled:opacity-80">SignIn</button>
+            <input onChange={(e) => setData(e)} value={formData.email?.email} className="border p-3 rounded-lg " type="text" placeholder="email" id="email" name="email" />
+
+            {validEmail &&
+              <p className='text-red-700'>Please include alphabets and space only</p>
+            }
+
+            <input onChange={(e) => setData(e)} value={formData.password?.password} className="border p-3 rounded-lg " type="password" placeholder="Password" id="password" name='password' />
+
+            {validPsw &&
+              <p className='text-red-700'>Please include alphabets and space only</p>
+            }
+
+            <button onClick={(e) => handleLogin(e)} className="bg-slate-700 rounded-lg p-3 text-white hover:opacity-95 disabled:opacity-80">SignIn</button>
 
           </form>
 
-          : <form  className="flex flex-col gap-4">
-            <input onChange={(e)=>setData(e)} value={formData.userName?.userName} className="border p-3 rounded-lg " type="text" placeholder="User Name" id='uname' name="userName"/>
-            <input onChange={(e)=>setData(e)} value={formData.email?.email} className="border p-3 rounded-lg " type="email" placeholder="email" id="email" name="email" />
-            <input onChange={(e)=>setData(e)} value={formData.password?.password} className="border p-3 rounded-lg " type="password" placeholder="Password" id="password" name='password' />
-            <button disabled={loading}  onClick={(e)=>handleChange(e)} className="bg-slate-700 rounded-lg p-3 text-white hover:opacity-95 disabled:opacity-80">
-              {loading?'Loading...':'SignUp'}
-              </button>
+          : <form className="flex flex-col gap-4">
+            <input onChange={(e) => setData(e)} value={formData.userName?.userName} className="border p-3 rounded-lg " type="text" placeholder="User Name" id='uname' name="userName" />
+
+            {validUname &&
+              <p className='text-red-700'>Please include alphabets and space only</p>
+            }
+
+            <input onChange={(e) => setData(e)} value={formData.email?.email} className="border p-3 rounded-lg " type="text" placeholder="email" id="email" name="email" />
+
+            {validEmail &&
+              <p className='text-red-700'>Please include alphabets and space only</p>
+            }
+
+            <input onChange={(e) => setData(e)} value={formData.password?.password} className="border p-3 rounded-lg " type="password" placeholder="Password" id="password" name='password' />
+
+            {validPsw &&
+              <p className='text-red-700'>Please include alphabets and space only</p>
+            }
+
+            <button disabled={loading} onClick={(e) => handleChange(e)} className="bg-slate-700 rounded-lg p-3 text-white hover:opacity-95 disabled:opacity-80">
+              {loading ? 'Loading...' : 'SignUp'}
+            </button>
 
           </form>
 
@@ -92,7 +190,7 @@ function Auth({ login }) {
       {login ?
         <div className="flex my-4">
 
-          <p>Create account? </p>
+          <p> Dont have an account? </p>
           <Link to={'/auth'}>
             <span className="text-blue-700"> SignUp</span>
           </Link>
