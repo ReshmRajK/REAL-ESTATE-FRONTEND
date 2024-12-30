@@ -111,8 +111,10 @@ const handleLogin=async(e)=>{
   }
   else{
       const result=await userLoginAPI(formData)
+    
+      
       if(result.status==200){ 
-          localStorage.setItem('token',result.token)
+          localStorage.setItem('token',result.data.token)
           // alert(result.data.message)
           dispatch(signInSuccess(result.data))
           setLoading(false)
