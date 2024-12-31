@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { userLoginAPI, userRegisterAPI } from "../server/allApis"
 import { useDispatch } from "react-redux"
 import { signInFailure, signInStart, signInSuccess } from "../redux/user/userSlice"
+import GoogleAuth from "../components/GoogleAuth"
 
 
 
@@ -157,6 +158,7 @@ const handleLogin=async(e)=>{
 
             <button onClick={(e) => handleLogin(e)} className="bg-slate-700 rounded-lg p-3 text-white hover:opacity-95 disabled:opacity-80">SignIn</button>
 
+              <GoogleAuth/>
           </form>
 
           : <form className="flex flex-col gap-4">

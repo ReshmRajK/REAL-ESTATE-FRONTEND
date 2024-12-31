@@ -8,3 +8,6 @@ export const userRegisterAPI=async(bodyData)=>{
 export const userLoginAPI=async(bodyData)=>{
     return await commonStructure("POST",`${BASE_URL}/signin`,bodyData)
 }
+export const googleLoginAPI=async(bodyData)=>{
+    return await commonStructure("POST",`${BASE_URL}/google-signin`,bodyData)
+}
