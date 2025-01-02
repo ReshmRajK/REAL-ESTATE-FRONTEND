@@ -2,6 +2,7 @@
 import {  useDispatch, useSelector } from "react-redux"
 import {  signOutUserFailure, signOutUserStart, signOutUserSuccess } from "../redux/user/userSlice"
 import { signOutAPI } from "../server/allApis"
+import { Link } from "react-router-dom"
 
 
 function Profile() {
@@ -61,7 +62,9 @@ const handleSignOut=async()=>{
         <input className="border p-3 rounded-lg" type="password" name="password" placeholder="Password" />
 
         {/* <button className="bg-slate-800 border p-3 rounded-lg text-white hover:opacity-95 disabled:opacity-80">UPDATE</button> */}
-        {/* <button className="bg-green-900 border p-3 rounded-lg text-white hover:opacity-95">CREATE LISTING</button> */}
+        <Link to={'/create-listing'} className="bg-green-900 border p-3 rounded-lg text-center text-white hover:opacity-95">
+        CREATE LISTING
+        </Link>
 
       </form>
 
