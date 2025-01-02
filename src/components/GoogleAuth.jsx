@@ -8,7 +8,6 @@ import { signInSuccess } from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
 
 
-
 function GoogleAuth() {
 
 
@@ -21,16 +20,16 @@ function GoogleAuth() {
       const provider = new GoogleAuthProvider()
       const auth = getAuth(app)
 
-      const result = await signInWithPopup(auth, provider)
+      const res = await signInWithPopup(auth, provider)
       // console.log(result);
-      const data = await googleLoginAPI({
+      const {data}= await googleLoginAPI({
 
-        name: result.user.displayName,
-        email: result.user.email,
-        photo: result.user.photoURL
+        name: res.user.displayName,
+        email: res.user.email,
+        photo: res.user.photoURL
 
       })
-      // console.log(data);
+      console.log(data);
       dispatch(signInSuccess(data))
       navigate('/')
 

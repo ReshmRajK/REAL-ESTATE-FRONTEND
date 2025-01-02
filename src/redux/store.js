@@ -6,27 +6,27 @@ import persistStore from "redux-persist/es/persistStore";
 
 
 
-const rootReducer=combineReducers({user:userSlice})
+const rootReducer = combineReducers({ user: userSlice })
 
-const persistConfig={
-    key:'root',
+const persistConfig = {
+    key: 'root',
     storage,
-    version:1
-    
-}
-const persistedReducer=persistReducer(persistConfig,rootReducer)
+    version: 1
 
-export const store=configureStore({
+}
+const persistedReducer = persistReducer(persistConfig, rootReducer)
+
+export const store = configureStore({
     // reducer:{
     //     user:userSlice
 
     // },
-    reducer:persistedReducer,
+    reducer: persistedReducer,
     //to prevent any errors in our browser
-    middleware:(getDefaultMiddleware)=>
+    middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
-            serializableCheck:false
+            serializableCheck: false
         })
 })
 
-export const persister=persistStore(store)
+export const persister = persistStore(store)

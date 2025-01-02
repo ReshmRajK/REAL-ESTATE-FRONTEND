@@ -8,7 +8,7 @@ import GoogleAuth from "../components/GoogleAuth"
 
 
 function Auth({ login }) {
-const dispatch=useDispatch()
+  const dispatch = useDispatch()
 
 
   const navigate = useNavigate()
@@ -18,7 +18,7 @@ const dispatch=useDispatch()
   })
 
   const [loading, setLoading] = useState(false)
-  const [error,setError]=useState(null)
+  const [error, setError] = useState(null)
 
   const [validUname, setValidUname] = useState(false)
   const [validEmail, setValidEmail] = useState(false)
@@ -69,68 +69,68 @@ const dispatch=useDispatch()
 
   }
   // console.log(formData);
-  
 
-const handleChange=async(e)=>{
-  e.preventDefault()
-  
-  setLoading(true)
-  const {userName,email,password}=formData
 
-  if(!userName||!email||!password){
-    alert('Please fill All data')
-  }
+  const handleChange = async (e) => {
+    e.preventDefault()
 
-  else{
-    const result=await userRegisterAPI(formData)
-    
-    if(result.status==201){
-     alert( result.data) 
-      setLoading(false)
-      setFormData({userName:"",email:"",password:""})
-      navigate('/login')
+    setLoading(true)
+    const { userName, email, password } = formData
+
+    if (!userName || !email || !password) {
+      alert('Please fill All data')
     }
-    else{
-      alert(result.response.data)
-      setLoading(false)
-      setError(null)
-      setFormData({userName:"",email:"",password:""})
+
+    else {
+      const result = await userRegisterAPI(formData)
+      console.log(result);
+
+
+      if (result.status == 201) {
+        alert(result.data)
+        setLoading(false)
+        setFormData({ userName: "", email: "", password: "" })
+        navigate('/login')
+      }
+      else {
+        alert(result.response.data)
+        setLoading(false)
+        setError(null)
+        setFormData({ userName: "", email: "", password: "" })
+      }
+
     }
-    
   }
-}
 
-const handleLogin=async(e)=>{
-  e.preventDefault()
-  // setLoading(true)
-  dispatch(signInStart())
-  const {email,password}=formData
+  const handleLogin = async (e) => {
+    e.preventDefault()
+    // setLoading(true)
+    dispatch(signInStart())
+    const { email, password } = formData
 
-  if(!email || !password){
-  
-     alert('Please fill all data')
-  }
-  else{
-      const result=await userLoginAPI(formData)
-    
-      
-      if(result.status==200){ 
-          localStorage.setItem('token',result.data.token)
-          // alert(result.data.message)
-          dispatch(signInSuccess(result.data))
-          setLoading(false)
-          setFormData({ ...formData, email:'',password:''})
-          navigate('/')
+    if (!email || !password) {
+
+      alert('Please fill all data')
+    }
+    else {
+      const { data } = await userLoginAPI(formData)
+      console.log(data);
+
+      if (data) {
+
+        dispatch(signInSuccess(data))
+        setLoading(false)
+        setFormData({ ...formData, email: '', password: '' })
+        navigate('/')
       }
-      else{
-          // alert(result.response.data)
-          dispatch(signInFailure(result.response.data))  
-          setLoading(false)           
-          setFormData({ ...FormData, email:'',password:''})
+      else {
 
+        dispatch(signInFailure(data.message))
+        setLoading(false)
+        setFormData({ ...FormData, email: '', password: '' })
       }
+    }
   }
-}
 
   return (
     <div className="max-w-lg mx-auto">
@@ -158,7 +158,7 @@ const handleLogin=async(e)=>{
 
             <button onClick={(e) => handleLogin(e)} className="bg-slate-700 rounded-lg p-3 text-white hover:opacity-95 disabled:opacity-80">SignIn</button>
 
-              <GoogleAuth/>
+            <GoogleAuth />
           </form>
 
           : <form className="flex flex-col gap-4">

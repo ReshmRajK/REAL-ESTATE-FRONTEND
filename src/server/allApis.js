@@ -11,3 +11,9 @@ export const userLoginAPI=async(bodyData)=>{
 export const googleLoginAPI=async(bodyData)=>{
     return await commonStructure("POST",`${BASE_URL}/google-signin`,bodyData)
 }
+export const userDeleteAPI=async(id)=>{
+    return await commonStructure("DELETE",`${BASE_URL}/user-delete/${id}`,"")
+}
+export const signOutAPI=async()=>{
+    return await commonStructure("GET",`${BASE_URL}/user/signout`,"")
+}
